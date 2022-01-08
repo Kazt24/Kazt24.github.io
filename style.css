@@ -1,0 +1,140 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Readex Pro', sans-serif;
+}
+
+
+.header{
+    max-width: 100vw;
+    height: 200px;
+    background: linear-gradient(180deg, rgba(254,96,200,0.5) 0%, rgba(233,224,39,0.5) 48%, rgba(155,255,0,0.5) 94%);
+    background-repeat: no-repeat;
+    opacity: 100%;
+    position: relative;
+}
+.menu-bar{
+    display: flex;
+    align-items: center;
+    flex-basis: 100px;
+    flex-flow: row;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+}
+h1{
+    text-decoration: none;
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    padding: 30px;
+}
+h1 a{
+    text-decoration: none;
+    color: white;
+}
+.covid-real-time{
+    background: linear-gradient(0deg, rgba(254,96,200,0.5) 0%, rgba(233,224,39,0.5) 48%, rgba(155,255,0,0.5) 94%);
+}
+h2{
+    padding-top: 30px;
+    padding-bottom: 30px;
+    color: black;
+    font-size: 50px;
+    text-align: center;
+    opacity: 70%;
+}
+.column{
+    display: grid;
+    grid-auto-columns: 30% 70%;
+    text-align: center;
+}
+h3{
+    font-size: 40px;
+    margin: 5px;
+}
+.Times{
+    grid-area: 1 / 1 / 3 / 1;
+}
+.cal-bg{
+min-width: min-content;
+height: auto;
+border-radius: 5px;
+background: rgba(128, 128, 128, 0.116);
+opacity: 100%;
+box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.397);
+border-top: 1px solid white;
+border-left: 2px solid white;
+}
+#Years{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+#Months{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+#Dates{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.btn{
+    display: inline-block;
+    min-width: max-content;
+    min-height: 30px;
+    background-color: rgba(255, 255, 255, 0.144);
+    text-align: center;
+    text-decoration: none;
+    border-radius: 3px;
+    border-color: transparent;
+    margin: 1px 1px;
+}
+
+.btn:hover{
+    background-color: rgba(54, 46, 46, 0.219);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.329);
+    transition: 0.5s;
+}
+
+#TimeLabels{
+    letter-spacing: 0.8px;
+    font-size: 25px;
+    align-items: center;
+    vertical-align: middle;
+}
+
+
+
+
+
+.inform-column{
+    grid-area: 1 / 2 / 3 / 2;
+}
+.inform{
+    font-size: 25px;
+    padding-left: 20px;
+    padding-top: 2px;
+    text-align: left;
+    list-style: none;
+}
+.contact{
+    min-width: 100vw;
+    height: auto;
+    background: linear-gradient(180deg, rgba(254,96,200,0.5) 0%, rgba(233,224,39,0.5) 48%, rgba(155,255,0,0.5) 94%);
+    text-align: center;
+    align-items: center;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+}
+h5{
+    position: relative;
+    text-decoration: none;
+    padding: 5px;
+    font-size: 30px;
+}
+.contact div a{
+    text-decoration: none;
+    font-size: 30px;
+}

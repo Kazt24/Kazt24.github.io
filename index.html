@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html 
+
+lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covid real-time</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+
+</head>
+<body>
+    
+    <div class="header">
+        <div class="menu-bar"> 
+            <h1><a href="index.html"> HOME </a></h1>
+            <h1><a href="#covid-r-t"> COVID REAL TIME </a></h1>
+            <h1><a href="#footer"> ABOUT </a></h1>
+        </div>
+    </div>
+        <div id="covid-r-t" class="covid-real-time">
+            <h2> Covid real time</h2>
+
+                <div class="column">
+                    <div class="Times">
+                        <h3>DATE</h3>
+                    <div class="cal-bg">
+                          <div id="Dates">                              
+                          </div>
+                    </div>
+
+                        <h3>MONTH</h3>
+                    <div class="cal-bg"> 
+                          <div id="Months">                                
+                          </div>
+                    </div>
+
+                        <h3>YEAR</h3>
+                    <div class="cal-bg">  
+                          <div id="Years">
+                          </div>
+                    </div>
+                    
+
+
+                    </div>
+
+                    <div class="inform-column"> 
+                    <h3 class="color"> Inform </h3>                
+                            <div class="inform" id="Positive"></div>
+                            <div class="inform" id="Negative"></div>
+                            <div class="inform" id="Death"></div>
+                            
+                            <canvas id="myChart" style="width:100%"></canvas>
+                            <label for="myChart" id="TimeLabels"></label>
+
+                    </div>
+                </div>
+    </div>
+        <div id="footer">
+            <div class="contact">
+                <br>
+                <h5>Contact us</h5>
+
+                <div><a href="https://www.facebook.com/kt.tn.140">via Facebook</a></div>
+                <br>
+            </ul>
+        </div>
+<script>
+    var allData;
+    var DeathStr = [];
+    var NegativeStr = [];
+    var PositiveStr = [];
+    var DateStr = [];
+    var monthname = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var month = [];
+    var year = [2019,2020,2021,2022];
+    var day = [];
+    var yValues = [];
+    var Year2020 = [];
+    var Year2021 = [];
+    var myDateInput;
+    var InputM;
+    var myYearInput;
+    var StrYearInput;
+    var PosiPerYear;
+    var PositiveIncStr = [];
+    var NegativeIncStr = [];
+    var DeathIncStr = [];
+
+    setup();
+
+    for (let i = 1; i < 32; i++){
+        day.push(i);
+        $("#Dates").append('<input id="Date'+i+'" onclick ="getDate('+i+')" type="button" class = "btn" value = "'+ i +'">');
+    }
+// loop print day in calendar
+    for (let i = 1; i < 13; i++){
+        $("#Months").append('<input id="Month'+i+'" onclick="getMonth('+i+')" type="button" class = "btn" value = "'+monthname[i-1]+'" name = "' +i+ '"">');
+    }
+// loop print month in calendar 
+    for (let i = 1; i < 5; i++){
+        $("#Years").append('<input id="Year'+year[i-1]+'" onclick="getYear('+year[i-1]+')" type="button" class = "btn" value = "'+year[i-1]+'">');     }
+// loop print year in calendar
+    function setup(){
+    fetch('https://api.covidtracking.com/v1/us/daily.json')
+    .then((response) => response.json())
+    .then((data) => gotData(data))
+    }
+// get data from server 
+    function gotData(data){
+        console.log(data);
+        allData = data;
+        for (let i = 0; i < data.length; i++){
+            DateStr[i] = JSON.stringify(data[i].date);
+            PositiveStr[i] = JSON.stringify(data[i].positive);
+            NegativeStr[i] = JSON.stringify(data[i].negative);
+            DeathStr[i] = JSON.stringify(data[i].death);
+            PositiveIncStr[i]  = JSON.stringify(data[i].positiveIncrease);
+            NegativeIncStr[i] = JSON.stringify(data[i].negativeIncrease);
+            DeathIncStr[i] = JSON.stringify(data[i].deathIncrease);
+        }
+        SpecifyYear();
+    }
+// stringify data
+    function SpecifyYear(){
+        for (let i = 0; i < allData.length; i++){
+            if(DateStr[i].substr(0,4) == 2020){
+                Year2020.push([DateStr[i].substr(4,2),DateStr[i].substr(6,2),
+                PositiveStr[i],NegativeStr[i],DeathStr[i],
+                PositiveIncStr[i],NegativeIncStr[i],DeathIncStr[i]]);
+            }
+            else
+            {
+                Year2021.push([DateStr[i].substr(4,2),DateStr[i].substr(6,2),
+                PositiveStr[i],NegativeStr[i],DeathStr[i],
+                PositiveIncStr[i],NegativeIncStr[i],DeathIncStr[i]]);
+            }
+        }
+    }
+    function comma(numb){
+        var str = numb.toString().split(".");
+        str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return str.join(".");   
+    }
+
+// put data to multidimensional array
+    function printYearData(){
+            $("#tempPos").remove();
+            $("#tempNeg").remove();
+            $("#tempDeath").remove();
+        if (myYearInput == 2020){
+            $("#Positive").append('<li class="inform" id="tempPos" > Positive in 2020: '+ comma(Year2021[0][2] - Year2020[0][2]) +'</li>' );
+            $("#Negative").append('<li class="inform" id="tempNeg" > Negative in 2020: '+ comma(Year2021[0][3] - Year2020[0][3])+'</li>' );
+            $("#Death").append('<li class="inform" id="tempDeath" > Death in 2020: '+ comma(Year2021[0][4] - Year2020[0][4])+'</li>' );
+        }
+        else if (myYearInput == 2021){
+            $("#Positive").append('<li class="inform" id="tempPos" > Positive in 2021: '+ comma(Year2021[0][2])+'</li>' );
+            $("#Negative").append('<li class="inform" id="tempNeg" > Negative in 2021: '+ comma(Year2021[0][3])+'</li>' );
+            $("#Death").append('<li class="inform" id="tempDeath" > Death in 2021: '+ comma(Year2021[0][4])+'</li>' );    
+        }
+    }
+
+    function pMonth(year, Tmonth, status){
+        var x;
+        if (status == "p"){
+            x =  Number(year[MonthL(year, Tmonth)][2]) - Number(year[MonthF(year, Tmonth)][2]) + Number(year[MonthF(year, Tmonth)][5]);
+        }
+
+        if (status == "n"){
+            x = Number(year[MonthL(year, Tmonth)][3]) - Number(year[MonthF(year, Tmonth)][3]) + Number(year[MonthF(year, Tmonth)][6]);
+        }
+
+        if (status == "d"){
+            x = Number(year[MonthL(year, Tmonth)][4]) - Number(year[MonthF(year, Tmonth)][4]) + Number(year[MonthF(year, Tmonth)][7]);
+        }
+        x = x || 0;
+        return x.toString();
+        }
+
+    function pDay(year, Tmonth, day,status){
+        var x;
+        if (status == "p"){
+            x = year[getIndexOfDay(year, Tmonth, day)][5]
+        }
+        if (status == "n"){
+            x = year[getIndexOfDay(year, Tmonth, day)][6]
+        }
+        if (status == "d"){
+            x = year[getIndexOfDay(year, Tmonth, day)][7]
+        }
+        x = x || 0;
+        return x.toString();
+    }
+    function printMonthData(){
+            $("#tempPos").remove();
+            $("#tempNeg").remove();
+            $("#tempDeath").remove();
+            for ( let i = 1; i < 13; i++){
+        if ((myYearInput == 2020) && InputM == i){
+            $("#Positive").append('<li class="inform" id="tempPos" > Positive in '+monthname[InputM-1]+ ': ' + comma(pMonth(Year2020,InputM,"p")) + '</li>');
+            $("#Negative").append('<li class="inform" id="tempNeg" > Negative in '+monthname[InputM-1]+ ': ' + comma(pMonth(Year2020,InputM,"n")) +'</li>');
+            $("#Death").append('<li class="inform" id="tempDeath" > Death in '+monthname[InputM-1]+ ': ' + comma(pMonth(Year2020,InputM,"d")) +'</li>');
+        }
+        else if ((myYearInput == 2021) && InputM == i){
+            $("#Positive").append('<li class="inform" id="tempPos" > Positive in '+monthname[InputM-1]+ ': ' + comma(pMonth(Year2021,InputM,"p")) +'</li>');
+            $("#Negative").append('<li class="inform" id="tempNeg" > Negative in '+monthname[InputM-1]+ ': ' + comma(pMonth(Year2021,InputM,"n")) + '</li>');
+            $("#Death").append('<li class="inform" id="tempDeath" > Death in '+monthname[InputM-1]+ ': ' + comma(pMonth(Year2021,InputM,"d")) +'</li>');
+        }
+    }
+    }
+    function printDayData(){
+            $("#tempPos").remove();
+            $("#tempNeg").remove();
+            $("#tempDeath").remove();
+            for ( let i = 0; i < 367; i++){
+                if ((myYearInput == 2020) && getIndexOfDay(Year2020, InputM, myDateInput) == i){
+                    $("#Positive").append('<li class="inform" id="tempPos" > Positive on '+myDateInput+': ' + comma(Year2020[i][5]) + '</li>');
+                    $("#Negative").append('<li class="inform" id="tempNeg" > Negative on '+myDateInput+': ' + comma(Year2020[i][6]) + '</li>');
+                    $("#Death").append('<li class="inform" id="tempDeath" > Death on '+myDateInput+': ' + comma(Year2020[i][7]) + '</li>');
+                    
+                }
+                else if ((myYearInput == 2021) && getIndexOfDay(Year2021, InputM, myDateInput) == i){
+                    $("#Positive").append('<li class="inform" id="tempPos" > Positive on '+myDateInput+': ' + comma(Year2021[i][5]) + '</li>');
+                    $("#Negative").append('<li class="inform" id="tempNeg" > Negative on '+myDateInput+': ' + comma(Year2021[i][6]) + '</li>');
+                    $("#Death").append('<li class="inform" id="tempDeath" > Death on '+myDateInput+': ' + comma(Year2021[i][7]) + '</li>');
+                    
+                }
+            }
+
+    }
+    function YearFL(year, pos){
+            if (pos == "F")
+            return year[year.length-1][0];
+            if (pos == "L")
+            return year[0][0];
+    }
+    function MonthL(year, Tmonth){
+        for (let i = 0; i < 367; i++){
+            if (year[i][0] == Tmonth && i == 0){
+                return i}
+                // return year[0][1]}
+            else if (year[i][0] == Tmonth && (year[i][0] != year[i-1][0])){
+                return i}
+                // return year[i][1]}
+        }
+    }
+
+    function MonthF(year, Tmonth){
+        for (let i = 0; i < 367; i++){
+            if (year[i][0] == Tmonth && year[i][1] == year[year.length-1][1]){
+                return i}
+                // return year[year.length-1][1]}
+            else if (year[i][0] == Tmonth && (year[i][0] != year[i+1][0])){
+                return i}
+                // return year[i][1]}
+    }}
+    
+    function getIndexOfDay(year, Tmonth, day){
+        for (let i = 0; i < 367; i++){
+            if (year[i][0] == Tmonth && year[i][1] == day){
+                return i}
+        }
+    }
+
+    function getDate(value){
+            // resetTime(1,0,0);
+            myDateInput = document.getElementById("Date" + value).value;
+            TimeLabel();
+            printDayData();
+            
+    }
+//get input day by button
+    function getMonth(name){
+            // resetTime(1,1,0);
+            InputM = document.getElementById("Month" + name).name;
+            TimeLabel();
+            printMonthData();
+            PutValuesD();
+            DrawChart(day);
+    }
+//get input month by button
+    function getYear(value){
+            // resetTime(1,1,1);
+            myYearInput = document.getElementById("Year" + value).value;
+            TimeLabel();
+            printYearData();
+            // PutValuesM();
+            DrawChart(Tmonth);
+    }
+//get input year by button
+    function checkDMYInput(value){
+        if (typeof(myDateInput) != "string"){
+            myDateInput = "__";}
+
+        else if (Number(myDateInput) < 11 && myDateInput.length == 1){
+            myDateInput = "0" + myDateInput;
+        }
+
+        if (typeof(InputM) != "string"){
+            InputM = "__";}
+        else if (Number(InputM) < 11 && InputM.length == 1){
+            InputM = "0" + InputM;
+        }
+
+        if (typeof(myYearInput) != "string"){
+            myYearInput = "____";}
+    }
+    
+    function TimeLabel(){
+        $("#tempLabel").remove();
+        checkDMYInput();
+        $("#TimeLabels").append("<label id='tempLabel'>" + myDateInput + "/" + InputM + "/" + myYearInput + "</label>");    
+    }
+
+    function resetTime(date,Tmonth,year){
+        if (date == 1) myDateInput = "__";
+        if (Tmonth == 1) InputM = "__";
+        if (year == 1) myYearInput = "____";
+        TimeLabel();
+    }
+    // function PutValuesM(){
+    //     var x =  1;
+    //     month = [];
+    //     yValues = [];
+    //     if (myYearInput == 2020){
+    //         YearFL(Year2020,"F");
+    //         YearFL(Year2020,"L");
+    //         for (let i = Number(YearFL(Year2020,"F")); i < Number(YearFL(Year2020,"L") + 1);i++){
+    //             yValues.push(pMonth(Year2020, i,"p"));
+    //             month.push(i);
+    //         }
+    //         console.log(month);
+
+    //     }
+    // }
+    function PutValuesD(){
+        var x = 1;
+        day = [];
+        yValues = [];
+        if (myYearInput == 2020){
+        for (let i = MonthF(Year2020,InputM); i > MonthL(Year2020,InputM) - 1; i--){
+            yValues.push(Year2020[i][5]);
+            day.push(x);
+            x++;
+        }}
+
+        else if (myYearInput == 2021){
+            MonthF(Year2021,InputM);
+            MonthL(Year2021,InputM);
+        for (let i = MonthF(Year2021,InputM); i > MonthL(Year2021,InputM) - 1; i--){
+            yValues.push(Year2021[i][5]);
+            day.push(x);
+            x++;
+        }}
+    }
+    function DrawChart(time){ 
+    new Chart("myChart", {
+        type: "line",
+        data: {
+            labels: time,
+            datasets: [{
+                fill: false,
+                lineTension: 0,
+                backgroundColor:
+                "rgba(255,0,0,1.0)",
+                borderColor:
+                "rgba(255,0,0,0.1)",
+                data: yValues
+            }]
+        },
+        options: {
+            legend: {display: false},
+            scales: {
+                yAxes: [{
+                    ticks: {min: 0,
+                    max:250000}}],
+            }
+        }
+    }); 
+}
+</script>
+</body>
+</html>
